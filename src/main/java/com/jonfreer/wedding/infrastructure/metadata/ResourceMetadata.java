@@ -11,9 +11,9 @@ import javax.ws.rs.core.EntityTag;
  */
 public class ResourceMetadata {
 
-    private URI uri;
-    private Date lastModified;
-    private EntityTag entityTag;
+    private final URI uri;
+    private final Date lastModified;
+    private final EntityTag entityTag;
     
     /**
      * Constructs a ResourceMetadata instance, provided a URI,
@@ -41,33 +41,6 @@ public class ResourceMetadata {
         this.lastModified = (Date)lastModified.clone();
         this.entityTag = entityTag;
     }
-
-    /**
-     * Alters the URI that identifies the resource to
-     * the URI provided.
-     * @param uri The desired URI to identify the resource.
-     */
-//    public void setUri(URI uri) {
-//		this.uri = uri;
-//	}
-
-    /**
-     * Alters the date the time that indicates when the resource
-     * was last modified to the date and time provided.
-     * @param lastModified The desired date and time indicating
-     * when the resource was last modified.
-     */
-//	public void setLastModified(Date lastModified) {
-//		this.lastModified = lastModified;
-//	}
-
-	/**
-	 * Alters the entity tag of the resource to the entity tag provided.
-	 * @param entityTag The desired entity tag for the resource.
-	 */
-//	public void setEntityTag(EntityTag entityTag) {
-//		this.entityTag = entityTag;
-//	}
 
 	/**
      * Retrieves the URI identifying the resource.
@@ -118,25 +91,28 @@ public class ResourceMetadata {
 
 		ResourceMetadata other = (ResourceMetadata) obj;
 		
-		if ((this.entityTag == null && other.entityTag != null) || 
-			(this.entityTag != null && other.entityTag == null) ||
-			!entityTag.equals(other.entityTag)) {
-			return false;
-		} 
+		boolean hasSameEntityTag = 
+			(this.entityTag == null && other.entityTag == null) ||
+			(
+				this.entityTag != null && other.entityTag != null &&
+				this.entityTag.equals(other.entityTag)
+			);
 		
-		if ((this.lastModified == null && other.lastModified != null) || 
-			(this.lastModified != null && other.lastModified == null) ||
-			!lastModified.equals(other.lastModified)) {
-			return false;
-		} 
+		boolean hasSameLastModified = 
+			(this.lastModified == null && other.lastModified == null) ||
+			(
+				this.lastModified != null && other.lastModified != null &&
+				this.lastModified.equals(other.lastModified)
+			);
 		
-		if ((uri == null && other.uri != null) || 
-			(uri != null && other.uri == null) || 
-			!uri.equals(other.uri)) {
-			return false;
-		} 
+		boolean hasSameUri = 
+			(this.uri == null && other.uri == null) ||
+			(
+				this.uri != null && other.uri != null &&
+				this.uri.equals(other.uri)
+			);
 		
-		return true;
+		return hasSameEntityTag && hasSameLastModified && hasSameUri;
 	}
 
     /**
