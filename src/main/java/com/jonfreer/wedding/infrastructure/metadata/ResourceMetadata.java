@@ -11,9 +11,9 @@ import javax.ws.rs.core.EntityTag;
  */
 public class ResourceMetadata {
 
-    private URI uri;
-    private Date lastModified;
-    private EntityTag entityTag;
+    private final URI uri;
+    private final Date lastModified;
+    private final EntityTag entityTag;
     
     /**
      * Constructs a ResourceMetadata instance, provided a URI,
