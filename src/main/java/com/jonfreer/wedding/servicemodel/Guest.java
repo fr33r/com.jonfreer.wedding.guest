@@ -92,53 +92,122 @@ public class Guest implements Cloneable {
     }
 
     /**
-     * Determines whether the calling Guest instance is equal to the provided Object instance.
-     *
-     * @param obj The Guest object (represented as Object) to be compared against.
-     * @return true if the provided Object is of the Guest class, and all property values match;
-     * otherwise returns false.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || this.getClass() != obj.getClass()) {
-            return false;
-        }
-
-        Guest guestObj = (Guest) obj;
-        if (
-        		(
-	        		(this.id == null && guestObj.id == null) || 
-	        		(this.id.intValue() == guestObj.id.intValue())
-        		) &&
-        		(	
-    				(this.givenName == null && guestObj.givenName == null) || 
-    				(this.givenName.equals(guestObj.givenName))
-				) &&
-        		(
-    				(this.surName == null && guestObj.surName == null) || 
-    				(this.surName.equals(guestObj.surName))
-				) &&
-        		(
-    				(this.description == null && guestObj.description == null) || 
-    				(this.description.equals(guestObj.description))
-				) &&
-        		(
-    				(this.inviteCode == null && guestObj.inviteCode == null) || 
-    				(this.inviteCode.equals(guestObj.inviteCode))
-				) &&
-        		(
-    				(this.dietaryRestrictions == null && guestObj.dietaryRestrictions == null) || 
-    				(this.dietaryRestrictions.equals(guestObj.dietaryRestrictions))
-				) &&
-        		(
-    				(this.reservation == null && guestObj.reservation == null) || 
-    				(this.reservation.equals(guestObj.reservation))
-				)
-            ) {
-            return true;
-        }
-        return false;
-    }
+	 * Determines whether the calling Guest instance is equal to the provided Object instance.
+	 *
+	 * @param obj The Guest object (represented as Object) to be compared against.
+	 * @return true if the provided Object is of the Guest class, and all property values match;
+	 * otherwise returns false.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+		
+		Guest guestObj = (Guest) obj;
+		
+		boolean hasSameId = 
+			(this.id == null && guestObj.id == null) ||
+			(
+				this.id != null && guestObj.id != null && 
+				this.id.intValue() == guestObj.id.intValue()
+			);
+		
+		boolean hasSameGivenName = 
+			(this.givenName == null && guestObj.givenName == null) ||
+			(
+				this.givenName != null && guestObj.givenName != null &&
+				this.givenName.equals(guestObj.givenName)
+			);
+		
+		boolean hasSameSurname = 
+			(this.surName == null && guestObj.surName == null) ||
+			(
+				this.surName != null && guestObj.surName != null &&
+				this.surName.equals(guestObj.surName)
+			);
+		
+		boolean hasSameDescription = 
+			(this.description == null && guestObj.description == null) ||
+			(
+				this.description != null && guestObj.description != null &&
+				this.description.equals(guestObj.description)
+			);
+		
+		boolean hasSameInviteCode = 
+			(this.inviteCode == null && guestObj.inviteCode == null) ||
+			(
+				this.inviteCode != null && guestObj.inviteCode != null &&
+				this.inviteCode.equals(guestObj.inviteCode)
+			);
+		
+		boolean hasSameDietaryRestrictions = 
+			(this.dietaryRestrictions == null && guestObj.dietaryRestrictions == null) ||
+			(
+				this.dietaryRestrictions != null && guestObj.dietaryRestrictions != null &&
+				this.dietaryRestrictions.equals(guestObj.dietaryRestrictions)
+			);
+		
+		boolean hasSameReservation = 
+			(this.reservation == null && guestObj.reservation == null) ||
+			(
+				this.reservation != null && guestObj.reservation != null &&
+				this.reservation.equals(guestObj.reservation)
+			);
+		
+		if ( 
+			hasSameId && 
+			hasSameGivenName && 
+			hasSameSurname &&
+			hasSameDescription &&
+			hasSameInviteCode &&
+			hasSameDietaryRestrictions &&
+			hasSameReservation
+			) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Generates an integer representation of this Guest instance.
+	 */
+	@Override
+	public int hashCode(){
+		
+		final int prime = 17;
+		int hashCode = 0;
+		
+		if(this.id != null){
+			hashCode = hashCode * prime + this.id.hashCode();
+		}
+		
+		if(this.givenName != null){
+			hashCode = hashCode * prime + this.givenName.hashCode();
+		}
+		
+		if(this.surName != null){
+			hashCode = hashCode * prime + this.surName.hashCode();
+		}
+		
+		if(this.description != null){
+			hashCode = hashCode * prime + this.description.hashCode();
+		}
+		
+		if(this.inviteCode != null){
+			hashCode = hashCode * prime + this.inviteCode.hashCode();
+		}
+		
+		if(this.dietaryRestrictions != null){
+			hashCode = hashCode * prime + this.dietaryRestrictions.hashCode();
+		}
+		
+		if(this.reservation != null){
+			hashCode = hashCode * prime + this.reservation.hashCode();
+		}
+		
+		return hashCode;
+	}
 
     /**
      * Provides a string representation of the guest.
