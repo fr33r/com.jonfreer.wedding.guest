@@ -47,23 +47,58 @@ public class Reservation implements Cloneable {
         }
 
         Reservation reservationObj = (Reservation) obj;
+        
+        boolean hasSameReservationId = 
+        	(this.id == null && reservationObj.id == null) ||
+        	(
+        		this.id != null && reservationObj.id != null &&
+        		this.id.intValue() == reservationObj.id.intValue()
+    		);
+        
+        boolean hasSameIsAttending = 
+        	(this.isAttending == null && reservationObj.isAttending == null) ||
+        	(
+        		this.isAttending != null && reservationObj.isAttending != null &&
+        		this.isAttending.booleanValue() == reservationObj.isAttending.booleanValue()
+    		);
+        
+        boolean hasSameSubmittedDateTime = 
+        	(this.submittedDateTime == null && reservationObj.submittedDateTime == null) ||
+        	(
+    			this.submittedDateTime != null && reservationObj.submittedDateTime != null &&
+    			this.submittedDateTime.equals(reservationObj.submittedDateTime)
+    		);
+        
         if (
-        		(
-	                (this.id == null && reservationObj.id == null) ||
-	                (this.id.intValue() == reservationObj.id.intValue())
-                ) &&
-        		(
-    				(this.isAttending == null && reservationObj.isAttending == null) ||
-        			(this.isAttending.booleanValue() == reservationObj.isAttending.booleanValue())	
-				) &&
-        		(
-    				(this.submittedDateTime == null && reservationObj.submittedDateTime == null) ||
-        			(this.submittedDateTime.equals(reservationObj.submittedDateTime))	
-				)
+        		hasSameReservationId && hasSameIsAttending && hasSameSubmittedDateTime
             ) {
             return true;
         }
         return false;
+    }
+    
+    /**
+	 * Generates an integer representation of this Reservation instance.
+	 */
+    @Override
+    public int hashCode(){
+    	
+    	final int prime = 17;
+    	int hashCode = 1;
+    	
+    	if(this.id != null){
+    		hashCode = hashCode * prime + this.id.hashCode();
+    	}
+    	
+    	if(this.isAttending != null){
+    		hashCode = hashCode * prime + this.isAttending.hashCode();
+    	}
+    	
+    	if(this.submittedDateTime != null){
+    		hashCode = hashCode * prime + this.submittedDateTime.hashCode();
+    	}
+    	
+    	return hashCode;
     }
 
     /**
