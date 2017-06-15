@@ -42,33 +42,6 @@ public class ResourceMetadata {
         this.entityTag = entityTag;
     }
 
-    /**
-     * Alters the URI that identifies the resource to
-     * the URI provided.
-     * @param uri The desired URI to identify the resource.
-     */
-//    public void setUri(URI uri) {
-//		this.uri = uri;
-//	}
-
-    /**
-     * Alters the date the time that indicates when the resource
-     * was last modified to the date and time provided.
-     * @param lastModified The desired date and time indicating
-     * when the resource was last modified.
-     */
-//	public void setLastModified(Date lastModified) {
-//		this.lastModified = lastModified;
-//	}
-
-	/**
-	 * Alters the entity tag of the resource to the entity tag provided.
-	 * @param entityTag The desired entity tag for the resource.
-	 */
-//	public void setEntityTag(EntityTag entityTag) {
-//		this.entityTag = entityTag;
-//	}
-
 	/**
      * Retrieves the URI identifying the resource.
      * @return The URI identifying the resource.
