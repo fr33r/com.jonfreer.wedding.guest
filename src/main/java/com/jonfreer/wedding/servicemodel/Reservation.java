@@ -2,8 +2,6 @@ package com.jonfreer.wedding.servicemodel;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.jonfreer.wedding.domain.Reservation;
-
 /**
  * Represents a reservation made for the wedding.
  */
