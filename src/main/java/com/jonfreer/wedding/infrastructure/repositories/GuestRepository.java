@@ -198,7 +198,6 @@ public class GuestRepository extends DatabaseRepository implements IGuestReposit
     public int insertGuest(Guest guest) {
 
         CallableStatement cStatement = null;
-        ResultSet result = null;
 
         try {
             cStatement =
@@ -232,9 +231,6 @@ public class GuestRepository extends DatabaseRepository implements IGuestReposit
             try {
                 if (cStatement != null) {
                     cStatement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             } catch (SQLException sqlEx) {
                 sqlEx.printStackTrace();
