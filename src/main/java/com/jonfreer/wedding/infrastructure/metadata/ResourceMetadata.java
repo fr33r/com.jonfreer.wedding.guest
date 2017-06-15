@@ -91,25 +91,28 @@ public class ResourceMetadata {
 
 		ResourceMetadata other = (ResourceMetadata) obj;
 		
-		if ((this.entityTag == null && other.entityTag != null) || 
-			(this.entityTag != null && other.entityTag == null) ||
-			!entityTag.equals(other.entityTag)) {
-			return false;
-		} 
+		boolean hasSameEntityTag = 
+			(this.entityTag == null && other.entityTag == null) ||
+			(
+				this.entityTag != null && other.entityTag != null &&
+				this.entityTag.equals(other.entityTag)
+			);
 		
-		if ((this.lastModified == null && other.lastModified != null) || 
-			(this.lastModified != null && other.lastModified == null) ||
-			!lastModified.equals(other.lastModified)) {
-			return false;
-		} 
+		boolean hasSameLastModified = 
+			(this.lastModified == null && other.lastModified == null) ||
+			(
+				this.lastModified != null && other.lastModified != null &&
+				this.lastModified.equals(other.lastModified)
+			);
 		
-		if ((uri == null && other.uri != null) || 
-			(uri != null && other.uri == null) || 
-			!uri.equals(other.uri)) {
-			return false;
-		} 
+		boolean hasSameUri = 
+			(this.uri == null && other.uri == null) ||
+			(
+				this.uri != null && other.uri != null &&
+				this.uri.equals(other.uri)
+			);
 		
-		return true;
+		return hasSameEntityTag && hasSameLastModified && hasSameUri;
 	}
 
     /**
