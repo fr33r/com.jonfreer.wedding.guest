@@ -77,14 +77,14 @@ public class GuestResource implements IGuestResource {
     		UriInfo uriInfo, 
     		Guest desiredGuestState) throws ResourceNotFoundException {
     	
-        int guestId = this.guestService.insertGuest(desiredGuestState);
+    		int guestId = this.guestService.insertGuest(desiredGuestState);
         Guest guest = this.guestService.getGuest(guestId);
         
         URI location = 
-        	UriBuilder
-        		.fromUri(uriInfo.getRequestUri())
-        		.path("/{id}/")
-        		.build(guestId);
+	        	UriBuilder
+	        		.fromUri(uriInfo.getRequestUri())
+	        		.path("/{id}/")
+	        		.build(guestId);
         
         Date lastModified = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime();
         EntityTag entityTag = this.entityTagService.get(guest);
@@ -126,17 +126,17 @@ public class GuestResource implements IGuestResource {
 
         Guest guest = this.guestService.getGuest(id);
              
-    	ResourceMetadata resourceMetadata = 
-    		this.resourceMetadataService.getResourceMetadata(uriInfo.getRequestUri());
+    		ResourceMetadata resourceMetadata = 
+    			this.resourceMetadataService.getResourceMetadata(uriInfo.getRequestUri());
         
         if(resourceMetadata == null){
         	
-        	Date lastModified = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime();
+	        	Date lastModified = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime();
             EntityTag entityTag = this.entityTagService.get(guest);
             
             this.resourceMetadataService.insertResourceMetadata(
             		new ResourceMetadata(uriInfo.getRequestUri(), lastModified, entityTag)
-    		);
+            	);
             resourceMetadata = 
             		this.resourceMetadataService.getResourceMetadata(uriInfo.getRequestUri());
         }
@@ -144,8 +144,8 @@ public class GuestResource implements IGuestResource {
         return Response
         			.ok(guest)
     				.header("Last-Modified", resourceMetadata.getLastModified())
-					.tag(resourceMetadata.getEntityTag())
-					.build();
+				.tag(resourceMetadata.getEntityTag())
+				.build();
     }
 
     /**
@@ -166,25 +166,25 @@ public class GuestResource implements IGuestResource {
         
         ResponseBuilder responseBuilder = Response.ok(guest);
         		
-    	ResourceMetadata resourceMetadata = 
+        ResourceMetadata resourceMetadata = 
 			this.resourceMetadataService.getResourceMetadata(uriInfo.getRequestUri());
         
         if(resourceMetadata != null){
         	
-        	//update resource metadata.
-        	Date lastModified = new Date();
-    		EntityTag entityTag = this.entityTagService.get(guest);
-    		
-    		this.resourceMetadataService.updateResourceMetaData(
+	        	//update resource metadata.
+	        	Date lastModified = new Date();
+	    		EntityTag entityTag = this.entityTagService.get(guest);
+	    		
+	    		this.resourceMetadataService.updateResourceMetaData(
 				new ResourceMetadata(uriInfo.getRequestUri(), lastModified, entityTag)
-    		);
-    		
-    		resourceMetadata = 
+	    		);
+	    		
+	    		resourceMetadata = 
 				this.resourceMetadataService.getResourceMetadata(uriInfo.getRequestUri());
-    		
-    		responseBuilder
-    			.header("Last-Modified", resourceMetadata.getLastModified())
-    			.tag(resourceMetadata.getEntityTag());
+	    		
+	    		responseBuilder
+	    			.header("Last-Modified", resourceMetadata.getLastModified())
+	    			.tag(resourceMetadata.getEntityTag());
         }
               
         return responseBuilder.build();

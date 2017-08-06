@@ -25,4 +25,22 @@ public interface IDatabaseUnitOfWork extends IUnitOfWork {
      * to the unit of work.
      */
     CallableStatement createCallableStatement(String sql);
+    
+    /**
+     * Closes the provided statement to release resources. All statements
+     * that have been created for this unit of work should be immediately closed
+     * once they are no longer in use.
+     * 
+     * @param statement The statement to be destroyed.
+     */
+     void destroyStatement(PreparedStatement statement);
+     
+     /**
+      * Closes the provided statements to release resources. All statements
+      * that have been created for this unit of work should be immediately closed
+      * once they are no longer in use.
+      * 
+      * @param statements The statements to be destroyed.
+      */
+     void destroyStatements(PreparedStatement...statements);
 }

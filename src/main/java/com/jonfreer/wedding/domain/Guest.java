@@ -3,9 +3,8 @@ package com.jonfreer.wedding.domain;
 /**
  * Represents a guest of the wedding.
  */
-public class Guest implements Cloneable {
+public class Guest extends Entity<Integer> implements Cloneable {
 
-	private Integer id;
 	private String givenName;
 	private String surName;
 	private String description;
@@ -17,7 +16,7 @@ public class Guest implements Cloneable {
 	 * Default constructor for the Guest class. Creates an empty Guest object.
 	 */
 	public Guest() {
-		this.id = null;
+		super();
 		this.givenName = null;
 		this.surName = null;
 		this.description = null;
@@ -38,8 +37,7 @@ public class Guest implements Cloneable {
 	 */
 	public Guest(Integer id, String givenName, String surName, String description,
 		String inviteCode, String dietaryRestrictions) {
-
-		this.id = id;
+		super(id);
 		this.givenName = givenName;
 		this.surName = surName;
 		this.description = description;
@@ -62,7 +60,7 @@ public class Guest implements Cloneable {
 	public Guest(Integer id, String givenName, String surName, String description,
 		String inviteCode, String dietaryRestrictions, Reservation reservation) {
 
-		this.id = id;
+		super(id);
 		this.givenName = givenName;
 		this.surName = surName;
 		this.description = description;
@@ -78,7 +76,7 @@ public class Guest implements Cloneable {
 	 * @param guest The guest in which to make a copy of.
 	 */
 	public Guest(Guest guest) {
-		this.id = guest.id;
+		super(guest.getId());
 		this.givenName = guest.givenName;
 		this.surName = guest.surName;
 		this.description = guest.description;
@@ -103,12 +101,7 @@ public class Guest implements Cloneable {
 		
 		Guest guestObj = (Guest) obj;
 		
-		boolean hasSameId = 
-			(this.id == null && guestObj.id == null) ||
-			(
-				this.id != null && guestObj.id != null && 
-				this.id.intValue() == guestObj.id.intValue()
-			);
+		boolean hasSameId = super.equals(guestObj);
 		
 		boolean hasSameGivenName = 
 			(this.givenName == null && guestObj.givenName == null) ||
@@ -173,11 +166,9 @@ public class Guest implements Cloneable {
 	public int hashCode(){
 		
 		final int prime = 17;
-		int hashCode = 0;
+		int hashCode = 1;
 		
-		if(this.id != null){
-			hashCode = hashCode * prime + this.id.hashCode();
-		}
+		hashCode = super.hashCode();
 		
 		if(this.givenName != null){
 			hashCode = hashCode * prime + this.givenName.hashCode();
@@ -214,18 +205,23 @@ public class Guest implements Cloneable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(this.getClass().getName() + "\n");
-		builder.append("id\t\t\t-->" + this.id.intValue() + "\n");
-		builder.append("givenName\t\t-->" + this.givenName + "\n");
-		builder.append("surName\t\t-->" + this.surName + "\n");
-		builder.append("description\t\t-->" + this.description + "\n");
-		builder.append("inviteCode\t\t-->" + this.inviteCode + "\n");
-		builder.append("dietaryRestrictions\t-->" + this.dietaryRestrictions + "\n");
-
-		if (this.reservation != null) {
-			builder.append("reservation\t-->" + this.reservation.toString());
+		builder.append("Guest [givenName=");
+		builder.append(givenName);
+		builder.append(", surName=");
+		builder.append(surName);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", inviteCode=");
+		builder.append(inviteCode);
+		builder.append(", dietaryRestrictions=");
+		builder.append(dietaryRestrictions);
+		if(this.reservation != null) {
+			builder.append(", reservation=");
+			builder.append(reservation.toString());
+		}else {
+			builder.append(", reservation=null");
 		}
-
+		builder.append("]");
 		return builder.toString();
 	}
 
@@ -250,24 +246,6 @@ public class Guest implements Cloneable {
 		} catch (CloneNotSupportedException e) { /* not possible. */ }
 
 		return guestObj;
-	}
-
-	/**
-	 * Retrieves the identifier of the guest.
-	 *
-	 * @return The identifier of the guest.
-	 */
-	public Integer getId() {
-		return this.id;
-	}
-
-	/**
-	 * Alters the identifier of the guest to instead have the value of the provided identifier.
-	 *
-	 * @param id The desired identifier of the guest.
-	 */
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	/**

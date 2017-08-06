@@ -85,8 +85,9 @@ public class GuestRepository_BlackBoxTest {
 		final String dietaryRestrictions = "None.";
 		final String inviteCode = "PA000";
 		final int reservationId = 1;
+		final boolean isAttending = true;
 		final Reservation expectedReservation = new Reservation();
-		expectedReservation.setId(reservationId);
+		expectedReservation.setIsAttending(isAttending);
 		final Guest expectedGuest = new Guest(
 				id, firstName, lastName, description, inviteCode, 
 				dietaryRestrictions, expectedReservation
@@ -104,7 +105,9 @@ public class GuestRepository_BlackBoxTest {
 		when(resultSetMock.getString("GUEST_DESCRIPTION")).thenReturn(description);
 		when(resultSetMock.getString("GUEST_DIETARY_RESTRICTIONS")).thenReturn(dietaryRestrictions);
 		when(resultSetMock.getString("INVITE_CODE")).thenReturn(inviteCode);
-		when(resultSetMock.getInt("RESERVATION_ID")).thenReturn(reservationId);		
+		when(resultSetMock.getInt("RESERVATION_ID")).thenReturn(reservationId);
+		when(resultSetMock.getBoolean("IS_ATTENDING")).thenReturn(isAttending);
+		
 		when(
 			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuest(?)}")
 		).thenReturn(callableStatementMock);
@@ -137,8 +140,9 @@ public class GuestRepository_BlackBoxTest {
 		final String dietaryRestrictions = "None.";
 		final String inviteCode = "PA000";
 		final int reservationId = 1;
+		final boolean isAttending = true;
 		final Reservation expectedReservation = new Reservation();
-		expectedReservation.setId(reservationId);
+		expectedReservation.setIsAttending(isAttending);
 		final Guest expectedGuest = new Guest(
 				id, firstName, lastName, description, inviteCode, 
 				dietaryRestrictions, expectedReservation
@@ -157,6 +161,7 @@ public class GuestRepository_BlackBoxTest {
 		when(resultSetMock.getString("GUEST_DIETARY_RESTRICTIONS")).thenReturn(dietaryRestrictions);
 		when(resultSetMock.getString("INVITE_CODE")).thenReturn(inviteCode);
 		when(resultSetMock.getInt("RESERVATION_ID")).thenReturn(reservationId);
+		when(resultSetMock.getBoolean("IS_ATTENDING")).thenReturn(isAttending);
 
 		when(
 			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}")
@@ -194,8 +199,9 @@ public class GuestRepository_BlackBoxTest {
 		final String dietaryRestrictions = "None.";
 		final String inviteCode = "PA000";
 		final int reservationId = 1;
+		final boolean isAttending = true;
 		final Reservation expectedReservation = new Reservation();
-		expectedReservation.setId(reservationId);
+		expectedReservation.setIsAttending(isAttending);
 		final Guest expectedGuest = new Guest(
 				id, firstName, lastName, description, inviteCode, 
 				dietaryRestrictions, expectedReservation
@@ -216,6 +222,7 @@ public class GuestRepository_BlackBoxTest {
 		when(resultSetMock.getString("GUEST_DIETARY_RESTRICTIONS")).thenReturn(dietaryRestrictions);
 		when(resultSetMock.getString("INVITE_CODE")).thenReturn(inviteCode);
 		when(resultSetMock.getInt("RESERVATION_ID")).thenReturn(reservationId);
+		when(resultSetMock.getBoolean("IS_ATTENDING")).thenReturn(isAttending);
 
 		when(
 			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}")
@@ -249,9 +256,6 @@ public class GuestRepository_BlackBoxTest {
 		final String firstName = "Jon";
 		final String lastName = "Freer";
 		final String inviteCode = "PA000";
-		final int reservationId = 1;
-		final Reservation expectedReservation = new Reservation();
-		expectedReservation.setId(reservationId);
 		final GuestSearchCriteria searchCriteria = 
 			new GuestSearchCriteria(firstName, lastName, inviteCode);
 			
