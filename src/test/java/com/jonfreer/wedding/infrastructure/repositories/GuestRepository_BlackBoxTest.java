@@ -87,6 +87,7 @@ public class GuestRepository_BlackBoxTest {
 		final int reservationId = 1;
 		final boolean isAttending = true;
 		final Reservation expectedReservation = new Reservation();
+		expectedReservation.setIsAttending(isAttending);
 		final Guest expectedGuest = new Guest(
 				id, firstName, lastName, description, inviteCode, 
 				dietaryRestrictions, expectedReservation
