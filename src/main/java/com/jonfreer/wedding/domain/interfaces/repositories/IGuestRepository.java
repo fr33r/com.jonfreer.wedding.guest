@@ -13,7 +13,7 @@ import org.jvnet.hk2.annotations.Contract;
  * wishes to serve as a repository for Guest instances.
  */
 @Contract
-public interface IGuestRepository {
+public interface IGuestRepository extends IRepository<Guest> {
 
     /**
      * Retrieves all guests from the repository.

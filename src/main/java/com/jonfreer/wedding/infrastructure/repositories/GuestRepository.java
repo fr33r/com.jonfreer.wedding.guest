@@ -9,301 +9,372 @@ import com.jonfreer.wedding.domain.interfaces.unitofwork.IDatabaseUnitOfWork;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import javax.inject.Named;
 
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * A database repository that directly interacts with the database
- * to manage guest entities.
+ * A database repository that directly interacts with the database to manage
+ * guest entities.
  */
 @Service
 @Named
 public class GuestRepository extends DatabaseRepository implements IGuestRepository {
 
-    /**
-     * Constructs a new instance provided an instance of a class that
-     * implements the IDatabaseUnitOfWork interface. It is recommended
-     * that instead of invoking this constructor, instead use the
-     * GuestRepositoryFactory class to create an instance.
-     *
-     * @param unitOfWork An instance of a class that implements the
-     *                   IDatabaseUnitOfWork interface. All methods invoked
-     *                   on the GuestRepository instance being created will
-     *                   utilize this unit of work.
-     */
-    public GuestRepository(IDatabaseUnitOfWork unitOfWork) {
-        super(unitOfWork);
-    }
+	/**
+	 * Constructs a new instance provided an instance of a class that implements
+	 * the IDatabaseUnitOfWork interface. It is recommended that instead of
+	 * invoking this constructor, instead use the GuestRepositoryFactory class
+	 * to create an instance.
+	 *
+	 * @param unitOfWork
+	 *            An instance of a class that implements the IDatabaseUnitOfWork
+	 *            interface. All methods invoked on the GuestRepository instance
+	 *            being created will utilize this unit of work.
+	 */
+	public GuestRepository(IDatabaseUnitOfWork unitOfWork) {
+		super(unitOfWork);
+	}
 
-    /**
-     * Retrieves a guest that is identified by the identifier provided.
-     *
-     * @param id The identifier of the guest to be retrieved.
-     * @return An instance of Guest that has the identifier specified.
-     * @throws ResourceNotFoundException Thrown when a guest with the identifier
-     *                                   provided cannot be found.
-     */
-    public Guest getGuest(int id) throws ResourceNotFoundException {
+	/**
+	 * Retrieves a guest that is identified by the identifier provided.
+	 *
+	 * @param id
+	 *            The identifier of the guest to be retrieved.
+	 * @return An instance of Guest that has the identifier specified.
+	 * @throws ResourceNotFoundException
+	 *             Thrown when a guest with the identifier provided cannot be
+	 *             found.
+	 */
+	public Guest getGuest(int id) throws ResourceNotFoundException {
 
-        Guest guest = null;
-        CallableStatement cStatement = null;
-        ResultSet result = null;
+		Guest guest = null;
+		CallableStatement cStatement = null;
+		ResultSet result = null;
 
-        try {
-            cStatement =
-                this.getUnitOfWork().createCallableStatement("{CALL GetGuest(?)}");
+		try {
+			cStatement = this.getUnitOfWork().createCallableStatement("{CALL GetGuest(?)}");
 
-            cStatement.setInt(1, id);
-            result = cStatement.executeQuery();
+			cStatement.setInt(1, id);
+			result = cStatement.executeQuery();
 
-            if (result.next()) {
-                guest = new Guest();
-                guest.setId(result.getInt("GUEST_ID"));
-                guest.setGivenName(result.getString("FIRST_NAME"));
-                guest.setSurName(result.getString("LAST_NAME"));
-                guest.setDescription(result.getString("GUEST_DESCRIPTION"));
-                guest.setDietaryRestrictions(result.getString("GUEST_DIETARY_RESTRICTIONS"));
-                guest.setInviteCode(result.getString("INVITE_CODE"));
+			if (result.next()) {
+				guest = new Guest();
+				guest.setId(result.getInt("GUEST_ID"));
+				guest.setGivenName(result.getString("FIRST_NAME"));
+				guest.setSurName(result.getString("LAST_NAME"));
+				guest.setDescription(result.getString("GUEST_DESCRIPTION"));
+				guest.setDietaryRestrictions(result.getString("GUEST_DIETARY_RESTRICTIONS"));
+				guest.setInviteCode(result.getString("INVITE_CODE"));
 
-                int reservationId = result.getInt("RESERVATION_ID");
-                if (!result.wasNull()) {
-                    Reservation reservation = new Reservation();
-                    reservation.setId(reservationId);
-                    guest.setReservation(reservation);
-                }
-            }
+				result.getInt("RESERVATION_ID");
+				if (!result.wasNull()) {
+					Reservation reservation = new Reservation();
+					reservation.setIsAttending(result.getBoolean("IS_ATTENDING"));
+					reservation.setSubmittedDateTime(
+						result.getTimestamp("DATETIME_SUBMITTED", Calendar.getInstance(TimeZone.getTimeZone("UTC"))));
+					guest.setReservation(reservation);
+				}
+			}
 
-            if (guest == null) {
-                throw new ResourceNotFoundException(
-                    "A guest with an ID of '" + id + "' could not be found.", id);
-            }
+			if (guest == null) {
+				throw new ResourceNotFoundException("A guest with an ID of '" + id + "' could not be found.", id);
+			}
 
-            return guest;
+			return guest;
 
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-            throw new RuntimeException(sqlEx);
-        } finally {
-            //release resources needed.
-            try {
-                if (cStatement != null && !cStatement.isClosed()) {
-                    cStatement.close();
-                }
-                if (result != null && !result.isClosed()) {
-                    result.close();
-                }
-            } catch (SQLException sqlEx) {
-                sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-            }
-        }
-    }
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatement(cStatement);
+		}
+	}
 
-    /**
-     * Replaces the state of an existing guest with the state of the guest provided.
-     *
-     * @param guest The desired state of the guest to update.
-     * @throws ResourceNotFoundException Thrown when a guest with the identifier
-     *                                   provided in the desired state cannot be found.
-     */
-    public void updateGuest(Guest guest) throws ResourceNotFoundException {
+	/**
+	 * Replaces the state of an existing guest with the state of the guest
+	 * provided.
+	 *
+	 * @param guest
+	 *            The desired state of the guest to update.
+	 * @throws ResourceNotFoundException
+	 *             Thrown when a guest with the identifier provided in the
+	 *             desired state cannot be found.
+	 */
+	public void updateGuest(Guest guest) throws ResourceNotFoundException {
 
-        CallableStatement cStatement = null;
+		CallableStatement cStatement = null;
+		CallableStatement getGuest = null;
 
-        try {
-            cStatement =
-                this.getUnitOfWork().createCallableStatement(
-                    "{CALL UpdateGuest(?, ?, ?, ?, ?, ?, ?)}"
-                );
-            cStatement.setInt(1, guest.getId());
-            cStatement.setString(2, guest.getGivenName());
-            cStatement.setString(3, guest.getSurName());
-            cStatement.setString(4, guest.getDescription());
-            cStatement.setString(5, guest.getDietaryRestrictions());
-            cStatement.setString(6, guest.getInviteCode());
+		try {
 
-            if (guest.getReservation() == null) {
-                cStatement.setNull(7, java.sql.Types.INTEGER);
-            } else {
-                cStatement.setInt(7, guest.getReservation().getId());
-            }
-            
-            int numOfRecords = cStatement.executeUpdate();
+			cStatement = this.getUnitOfWork().createCallableStatement("{CALL UpdateGuest(?, ?, ?, ?, ?, ?, ?)}");
+			cStatement.setInt(1, guest.getId());
+			cStatement.setString(2, guest.getGivenName());
+			cStatement.setString(3, guest.getSurName());
+			cStatement.setString(4, guest.getDescription());
+			cStatement.setString(5, guest.getDietaryRestrictions());
+			cStatement.setString(6, guest.getInviteCode());
 
-            if (numOfRecords < 1) {
-                throw new ResourceNotFoundException(
-                    "A guest with an ID of '" + guest.getId() + "' could not be found.", guest.getId());
-            }
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-            throw new RuntimeException(sqlEx);
-        } finally {
-            //release resources needed.
-            try {
-                if (cStatement != null) {
-                    cStatement.close();
-                }
-            } catch (SQLException sqlEx) {
-                sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-            }
-        }
-    }
+			getGuest = this.getUnitOfWork().createCallableStatement("{CALL GetGuest(?)}");
+			getGuest.setInt(1, guest.getId());
+			ResultSet result = getGuest.executeQuery();
 
-    /**
-     * Deletes a guest that is identified by the identifier provided.
-     *
-     * @param id The identifier of the guest to be deleted.
-     * @throws ResourceNotFoundException Thrown when a guest with the identifier
-     *                                   provided cannot be found.
-     */
-    public void deleteGuest(int id) throws ResourceNotFoundException {
+			if (!result.next()) {
+				throw new ResourceNotFoundException("A guest with an ID of '" + guest.getId() + "' could not be found.",
+					guest.getId());
+			}
 
-        CallableStatement cStatement = null;
+			int reservationId = result.getInt("RESERVATION_ID");
+			boolean hasReservation = !result.wasNull();
+			boolean addingReservation = !hasReservation && guest.getReservation() != null;
+			boolean updatingReservation = hasReservation && guest.getReservation() != null;
+			boolean deletingReservation = hasReservation && guest.getReservation() == null;
 
-        try {
-            cStatement = this.getUnitOfWork().createCallableStatement("{CALL DeleteGuest(?)}");
-            cStatement.setInt(1, id);
+			if (addingReservation) {
+				reservationId = this.createReservation(guest.getReservation());
+				cStatement.setInt(7, reservationId);
+				cStatement.executeUpdate();
+			} else if (updatingReservation) {
+				this.updateReservation(reservationId, guest.getReservation());
+				cStatement.setInt(7, reservationId);
+				cStatement.executeUpdate();
+			} else if (deletingReservation) {
+				cStatement.setNull(7, java.sql.Types.INTEGER);
+				cStatement.executeUpdate();
+				this.deleteReservation(reservationId);
+			} else {
+				cStatement.setNull(7, java.sql.Types.INTEGER);
+				cStatement.executeUpdate();
+			}
 
-            int numOfRecords = cStatement.executeUpdate();
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatements(cStatement, getGuest);
+		}
+	}
 
-            if (numOfRecords < 1) {
-                throw new ResourceNotFoundException(
-                    "A guest with an ID of '" + id + "' could not be found.", id);
-            }
+	/**
+	 * Deletes a guest that is identified by the identifier provided.
+	 *
+	 * @param id
+	 *            The identifier of the guest to be deleted.
+	 * @throws ResourceNotFoundException
+	 *             Thrown when a guest with the identifier provided cannot be
+	 *             found.
+	 */
+	public void deleteGuest(int id) throws ResourceNotFoundException {
 
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-            throw new RuntimeException(sqlEx);
-        } finally {
-            //release resources needed.
-            try {
-                if (cStatement != null) {
-                    cStatement.close();
-                }
-            } catch (SQLException sqlEx) {
-                sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-            }
-        }
-    }
+		CallableStatement cStatement = null;
+		CallableStatement getGuest = null;
 
-    /**
-     * Creates a new guest with the state provided.
-     *
-     * @param guest The desired state of the guest to create.
-     * @return The identifier of the newly created guest.
-     */
-    public int insertGuest(Guest guest) {
+		try {
+			getGuest = this.getUnitOfWork().createCallableStatement("{CALL GetGuest(?)}");
+			getGuest.setInt(1, id); //
+			ResultSet result = getGuest.executeQuery();
 
-        CallableStatement cStatement = null;
+			if (!result.next()) {
+				throw new ResourceNotFoundException("A guest with an ID of '" + id + "' could not be found.", id);
+			}
 
-        try {
-            cStatement =
-                this.getUnitOfWork().createCallableStatement(
-                    "{CALL CreateGuest(?, ?, ?, ?, ?, ?, ?)}"
-                );
-            cStatement.setString(1, guest.getGivenName());
-            cStatement.setString(2, guest.getSurName());
-            cStatement.setString(3, guest.getDescription());
-            cStatement.setString(4, guest.getDietaryRestrictions());
-            cStatement.setString(5, guest.getInviteCode());
+			int reservationId = result.getInt("RESERVATION_ID");
+			boolean deleteReservation = !result.wasNull();
 
-            if (guest.getReservation() == null) {
-                cStatement.setNull(6, java.sql.Types.INTEGER);
-            } else {
-                cStatement.setInt(6, guest.getReservation().getId());
-            }
+			cStatement = this.getUnitOfWork().createCallableStatement("{CALL DeleteGuest(?)}");
+			cStatement.setInt(1, id);
 
-            cStatement.registerOutParameter("Id", Types.INTEGER);
+			cStatement.executeUpdate();
 
-            cStatement.executeUpdate();
+			if (deleteReservation) {
+				this.deleteReservation(reservationId);
+			}
 
-            return cStatement.getInt("Id");
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatements(cStatement, getGuest);
+		}
+	}
 
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-            throw new RuntimeException(sqlEx);
-        } finally {
+	/**
+	 * Creates a new guest with the state provided.
+	 *
+	 * @param guest
+	 *            The desired state of the guest to create.
+	 * @return The identifier of the newly created guest.
+	 */
+	public int insertGuest(Guest guest) {
 
-            //release resources needed.
-            try {
-                if (cStatement != null) {
-                    cStatement.close();
-                }
-            } catch (SQLException sqlEx) {
-                sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-            }
-        }
-    }
+		CallableStatement cStatement = null;
 
-    /**
-     * Retrieves all of the guests matching the provided search criteria.
-     * The search criteria is optional, and when omitted, all guests are returned.
-     * @param searchCriteria The search criteria that is used to filter the guests
-     *                       in the repository.
-     * @return A collection of guests that match the search criteria if provided;
-     * otherwise, a collection of all the guests in the repository.
-     */
-    public ArrayList<Guest> getGuests(GuestSearchCriteria searchCriteria) {
+		try {
+			cStatement = this.getUnitOfWork().createCallableStatement("{CALL CreateGuest(?, ?, ?, ?, ?, ?, ?)}");
+			cStatement.setString(1, guest.getGivenName());
+			cStatement.setString(2, guest.getSurName());
+			cStatement.setString(3, guest.getDescription());
+			cStatement.setString(4, guest.getDietaryRestrictions());
+			cStatement.setString(5, guest.getInviteCode());
 
-        ArrayList<Guest> guests = new ArrayList<Guest>();
-        CallableStatement cStatement = null;
-        ResultSet result = null;
+			if (guest.getReservation() == null) {
+				cStatement.setNull(6, java.sql.Types.INTEGER);
+			} else { // create a reservation.
+				int reservationId = this.createReservation(guest.getReservation());
+				cStatement.setInt(6, reservationId);
+			}
 
-        try {
-            cStatement = this.getUnitOfWork().createCallableStatement("{CALL GetGuests(?, ?, ?)}");
+			cStatement.registerOutParameter("Id", Types.INTEGER);
 
-            if(searchCriteria != null){
-                cStatement.setString(1, searchCriteria.getInviteCode());
-                cStatement.setString(2, searchCriteria.getGivenName());
-                cStatement.setString(3, searchCriteria.getSurname());
-            }else{
-                cStatement.setString(1, null);
-                cStatement.setString(2, null);
-                cStatement.setString(3, null);
-            }
+			cStatement.executeUpdate();
 
-            result = cStatement.executeQuery();
+			return cStatement.getInt("Id");
 
-            while (result.next()) {
-                Guest guest = new Guest();
-                guest.setId(result.getInt("GUEST_ID"));
-                guest.setGivenName(result.getString("FIRST_NAME"));
-                guest.setSurName(result.getString("LAST_NAME"));
-                guest.setDescription(result.getString("GUEST_DESCRIPTION"));
-                guest.setDietaryRestrictions(result.getString("GUEST_DIETARY_RESTRICTIONS"));
-                guest.setInviteCode(result.getString("INVITE_CODE"));
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatement(cStatement);
+		}
+	}
 
-                int reservationId = result.getInt("RESERVATION_ID");
-                if (!result.wasNull()) {
-                    Reservation reservation = new Reservation();
-                    reservation.setId(reservationId);
-                    guest.setReservation(reservation);
-                }
+	/**
+	 * Retrieves all of the guests matching the provided search criteria. The
+	 * search criteria is optional, and when omitted, all guests are returned.
+	 * 
+	 * @param searchCriteria
+	 *            The search criteria that is used to filter the guests in the
+	 *            repository.
+	 * @return A collection of guests that match the search criteria if
+	 *         provided; otherwise, a collection of all the guests in the
+	 *         repository.
+	 */
+	public ArrayList<Guest> getGuests(GuestSearchCriteria searchCriteria) {
 
-                guests.add(guest);
-            }
+		ArrayList<Guest> guests = new ArrayList<Guest>();
+		CallableStatement cStatement = null;
+		ResultSet result = null;
 
-            return guests;
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
-            throw new RuntimeException(sqlEx);
-        } finally {
-            //release resources needed.
-            try {
-                if (cStatement != null && !cStatement.isClosed()) {
-                    cStatement.close();
-                }
-                if (result != null && !result.isClosed()) {
-                    result.close();
-                }
-            } catch (SQLException sqlEx) {
-                sqlEx.printStackTrace();
-                throw new RuntimeException(sqlEx);
-            }
-        }
-    }
+		try {
+			cStatement = this.getUnitOfWork().createCallableStatement("{CALL GetGuests(?, ?, ?)}");
+
+			if (searchCriteria != null) {
+				cStatement.setString(1, searchCriteria.getInviteCode());
+				cStatement.setString(2, searchCriteria.getGivenName());
+				cStatement.setString(3, searchCriteria.getSurname());
+			} else {
+				cStatement.setString(1, null);
+				cStatement.setString(2, null);
+				cStatement.setString(3, null);
+			}
+
+			result = cStatement.executeQuery();
+
+			while (result.next()) {
+				Guest guest = new Guest();
+				guest.setId(result.getInt("GUEST_ID"));
+				guest.setGivenName(result.getString("FIRST_NAME"));
+				guest.setSurName(result.getString("LAST_NAME"));
+				guest.setDescription(result.getString("GUEST_DESCRIPTION"));
+				guest.setDietaryRestrictions(result.getString("GUEST_DIETARY_RESTRICTIONS"));
+				guest.setInviteCode(result.getString("INVITE_CODE"));
+
+				result.getInt("RESERVATION_ID");
+				if (!result.wasNull()) {
+					Reservation reservation = new Reservation();
+					reservation.setIsAttending(result.getBoolean("IS_ATTENDING"));
+					reservation.setSubmittedDateTime(
+						result.getTimestamp("DATETIME_SUBMITTED", Calendar.getInstance(TimeZone.getTimeZone("UTC"))));
+					guest.setReservation(reservation);
+				}
+
+				guests.add(guest);
+			}
+
+			return guests;
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatement(cStatement);
+		}
+	}
+
+	private int createReservation(Reservation reservation) {
+		CallableStatement createReservation = null;
+		try {
+			createReservation = 
+				this.getUnitOfWork().createCallableStatement("{CALL CreateReservation(?, ?)}");
+			createReservation.setBoolean(1, reservation.getIsAttending());
+			createReservation.registerOutParameter("Id", Types.INTEGER);
+			createReservation.executeUpdate();
+			return createReservation.getInt("Id");
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatement(createReservation);
+		}
+	}
+
+	private void updateReservation(int reservationId, Reservation reservation) {
+		CallableStatement updateReservation = null;
+		try {
+			updateReservation = 
+				this.getUnitOfWork().createCallableStatement("{CALL UpdateReservation(?, ?, ?)}");
+			updateReservation.setInt(1, reservationId);
+			updateReservation.setTimestamp(2, new Timestamp(reservation.getSubmittedDateTime().getTime()),
+				Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+			updateReservation.setBoolean(3, reservation.getIsAttending());
+			updateReservation.executeUpdate();
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatement(updateReservation);
+		}
+	}
+
+	// potentially create QueryBuilder class?
+	// class Query
+	// abstract class Clause
+	// class SelectClause extends Clause
+	// class FromClause extends Clause
+	// --> innerJoin()
+	// --> leftOuterJoin()
+	// --> rightOuterJoin()
+	// class WhereClause extends Clause
+	// --> and()
+	// --> or()
+	// --> between()
+	// class GroupByClause extends Clause
+	// class HavingClause extends Clause
+	// class LimitClause extends Clause
+
+	private void deleteReservation(int reservationId) {
+		CallableStatement deleteReservation = null;
+		try {
+			deleteReservation = 
+				this.getUnitOfWork().createCallableStatement("{CALL DeleteReservation(?)}");
+			deleteReservation.setInt(1, reservationId);
+			deleteReservation.executeUpdate();
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		} finally {
+			// release resources needed.
+			this.getUnitOfWork().destroyStatement(deleteReservation);
+		}
+	}
 }

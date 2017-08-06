@@ -87,7 +87,7 @@ public class LogService implements com.jonfreer.wedding.infrastructure.interface
             unitOfWork.Save();
 
         } catch (SQLException e) {
-        	unitOfWork.Undo();
+        		unitOfWork.Undo();
             e.printStackTrace();
         } finally {
             try {

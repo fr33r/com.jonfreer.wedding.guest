@@ -78,13 +78,12 @@ public class DatabaseUnitOfWork implements IDatabaseUnitOfWork {
      * @return An instance of PreparedStatement representing a single parameterized
      * SQL statement to execute for this unit of work.
      */
-    
     public PreparedStatement createPreparedStatement(String sql) {
         try {
             return this.connection.prepareStatement(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new java.lang.RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -96,14 +95,44 @@ public class DatabaseUnitOfWork implements IDatabaseUnitOfWork {
      * @param sql The JDBC escaped syntax SQL statement.
      * @return An instance of CallableStatement representing a single JDBC
      * escape syntax SQL statement to execute for this unit of work.
-     */
-    
+     */ 
     public CallableStatement createCallableStatement(String sql){
         try{
             return this.connection.prepareCall(sql);
         }catch(SQLException e){
             e.printStackTrace();
-            throw new java.lang.RuntimeException(e);
+            throw new RuntimeException(e);
         }
+    }
+    
+    /**
+     * Closes the provided statement to release resources. All statements
+     * that have been created for this unit of work should be immediately closed
+     * once they are no longer in use.
+     * 
+     * @param statement The statement to be destroyed.
+     */
+    public void destroyStatement(PreparedStatement statement) {
+    		this.destroyStatements(statement);
+    }
+    
+    /**
+     * Closes the provided statements to release resources. All statements
+     * that have been created for this unit of work should be immediately closed
+     * once they are no longer in use.
+     * 
+     * @param statements The statements to be destroyed.
+     */
+    public void destroyStatements(PreparedStatement...statements) {
+    		try {
+			for(PreparedStatement statement : statements) {
+				if (statement != null && !statement.isClosed()) {
+					statement.close();
+				}
+			}
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
+			throw new RuntimeException(sqlEx);
+		}
     }
 }

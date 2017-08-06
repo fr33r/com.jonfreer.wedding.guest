@@ -9,7 +9,6 @@ import java.util.Date;
 @XmlRootElement(name = "reservation")
 public class Reservation implements Cloneable {
 
-    private Integer id;
     private Boolean isAttending;
     private Date submittedDateTime;
 
@@ -17,7 +16,6 @@ public class Reservation implements Cloneable {
      * Default constructor for the Reservation class. Creates an empty Reservation object.
      */
     public Reservation() {
-        this.id = null;
         this.isAttending = false;
         this.submittedDateTime = null;
     }
@@ -29,8 +27,7 @@ public class Reservation implements Cloneable {
      * @param isAttending       The Boolean value indicating true when attending, false otherwise.
      * @param submittedDateTime The date and time that the reservation was submitted.
      */
-    public Reservation(Integer id, Boolean isAttending, Date submittedDateTime) {
-        this.id = id;
+    public Reservation(Boolean isAttending, Date submittedDateTime) {
         this.isAttending = isAttending;
         this.submittedDateTime = (Date) submittedDateTime.clone();
     }
@@ -50,13 +47,6 @@ public class Reservation implements Cloneable {
 
         Reservation reservationObj = (Reservation) obj;
         
-        boolean hasSameReservationId = 
-        	(this.id == null && reservationObj.id == null) ||
-        	(
-        		this.id != null && reservationObj.id != null &&
-        		this.id.intValue() == reservationObj.id.intValue()
-    		);
-        
         boolean hasSameIsAttending = 
         	(this.isAttending == null && reservationObj.isAttending == null) ||
         	(
@@ -71,9 +61,7 @@ public class Reservation implements Cloneable {
     			this.submittedDateTime.equals(reservationObj.submittedDateTime)
     		);
         
-        if (
-        		hasSameReservationId && hasSameIsAttending && hasSameSubmittedDateTime
-            ) {
+        if (hasSameIsAttending && hasSameSubmittedDateTime) {
             return true;
         }
         return false;
@@ -87,10 +75,6 @@ public class Reservation implements Cloneable {
     	
     	final int prime = 17;
     	int hashCode = 1;
-    	
-    	if(this.id != null){
-    		hashCode = hashCode * prime + this.id.hashCode();
-    	}
     	
     	if(this.isAttending != null){
     		hashCode = hashCode * prime + this.isAttending.hashCode();
@@ -119,24 +103,6 @@ public class Reservation implements Cloneable {
         } catch (CloneNotSupportedException e) { /* not possible. */ }
 
         return reservationObj;
-    }
-
-    /**
-     * Retrieves the identifier for the reservation.
-     *
-     * @return The identifier for the reservation.
-     */
-    public Integer getId() {
-        return this.id;
-    }
-
-    /**
-     * Alters the identifier for the reservation.
-     *
-     * @param id The desired identifier for the reservation.
-     */
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     /**
@@ -177,5 +143,24 @@ public class Reservation implements Cloneable {
     public void setSubmittedDateTime(Date submittedDateTime) {
         this.submittedDateTime = submittedDateTime;
     }
-}
 
+    /**
+     * Provides a string representation of the reservation.
+     *
+     * @return The reservation represented as a String.
+     */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Reservation [isAttending=");
+		builder.append(isAttending);
+		if(this.submittedDateTime != null) {
+			builder.append(", submittedDateTime=");
+			builder.append(this.submittedDateTime.toString());
+		} else {
+			builder.append(", submittedDateTime=null");
+		}	
+		builder.append("]");
+		return builder.toString();
+	}
+}

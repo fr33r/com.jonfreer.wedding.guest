@@ -125,14 +125,20 @@ public class GuestSearchCriteria implements Cloneable{
     }
 
     /**
-     * Provides a string representation of the GuestSearchCriteria instance.
-     * @return The string representation of the GuestSearchCriteria instance.
+     * Provides a string representation of the guest search criteria.
+     *
+     * @return The guest search criteria represented as a String.
      */
     @Override
-    public String toString(){
-        return this.getClass().getName() + "\n" +
-                "Given Name: " + this.givenName + "\n" +
-                "Surname: " + this.surname + "\n" +
-                "Invite Code: " + this.inviteCode + "\n";
-    }
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("GuestSearchCriteria [givenName=");
+		builder.append(givenName);
+		builder.append(", surname=");
+		builder.append(surname);
+		builder.append(", inviteCode=");
+		builder.append(inviteCode);
+		builder.append("]");
+		return builder.toString();
+	}
 }

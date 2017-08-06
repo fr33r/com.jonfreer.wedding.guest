@@ -209,28 +209,35 @@ public class Guest implements Cloneable {
 		return hashCode;
 	}
 
-    /**
+	/**
      * Provides a string representation of the guest.
      *
      * @return The guest represented as a String.
      */
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getClass().getName() + "\n");
-        builder.append("id\t\t\t-->" + this.id + "\n");
-        builder.append("givenName\t\t-->" + this.givenName + "\n");
-        builder.append("surName\t\t-->" + this.surName + "\n");
-        builder.append("description\t\t-->" + this.description + "\n");
-        builder.append("inviteCode\t\t-->" + this.inviteCode + "\n");
-        builder.append("dietaryRestrictions\t-->" + this.dietaryRestrictions + "\n");
-
-        if (this.reservation != null) {
-            builder.append("reservation\t-->" + this.reservation.toString());
-        }
-
-        return builder.toString();
-    }
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Guest [id=");
+		builder.append(id);
+		builder.append(", givenName=");
+		builder.append(givenName);
+		builder.append(", surName=");
+		builder.append(surName);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", inviteCode=");
+		builder.append(inviteCode);
+		builder.append(", dietaryRestrictions=");
+		builder.append(dietaryRestrictions);
+		if(this.reservation != null) {
+			builder.append(", reservation=");
+			builder.append(this.reservation.toString());
+		} else {
+			builder.append(", reservation=null");
+		}
+		builder.append("]");
+		return builder.toString();
+	}
 
     /**
      * Creates a "deep" copy of the calling Guest instance. All immutable
