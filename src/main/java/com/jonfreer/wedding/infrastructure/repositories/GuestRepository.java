@@ -1,13 +1,10 @@
 package com.jonfreer.wedding.infrastructure.repositories;
 
-import com.jonfreer.wedding.domain.Guest;
-import com.jonfreer.wedding.domain.GuestSearchCriteria;
-import com.jonfreer.wedding.domain.Reservation;
-import com.jonfreer.wedding.domain.interfaces.repositories.IGuestRepository;
-import com.jonfreer.wedding.infrastructure.exceptions.ResourceNotFoundException;
-import com.jonfreer.wedding.domain.interfaces.unitofwork.IDatabaseUnitOfWork;
-
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -15,6 +12,13 @@ import java.util.TimeZone;
 import javax.inject.Named;
 
 import org.jvnet.hk2.annotations.Service;
+
+import com.jonfreer.wedding.domain.Guest;
+import com.jonfreer.wedding.domain.GuestSearchCriteria;
+import com.jonfreer.wedding.domain.Reservation;
+import com.jonfreer.wedding.domain.interfaces.repositories.IGuestRepository;
+import com.jonfreer.wedding.domain.interfaces.unitofwork.IDatabaseUnitOfWork;
+import com.jonfreer.wedding.infrastructure.exceptions.ResourceNotFoundException;
 
 /**
  * A database repository that directly interacts with the database to manage
