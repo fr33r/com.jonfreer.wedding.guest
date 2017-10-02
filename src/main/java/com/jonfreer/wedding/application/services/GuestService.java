@@ -3,7 +3,7 @@ package com.jonfreer.wedding.application.services;
 import java.util.ArrayList;
 
 import com.jonfreer.wedding.infrastructure.interfaces.services.LogService;
-import com.jonfreer.wedding.servicemodel.GuestSearchCriteria;
+import com.jonfreer.wedding.infrastructure.queries.GuestSearchQuery;
 import org.dozer.Mapper;
 import com.jonfreer.wedding.application.interfaces.services.IGuestService;
 import com.jonfreer.wedding.domain.interfaces.repositories.IGuestRepository;
@@ -148,7 +148,7 @@ public class GuestService implements IGuestService {
         }
     }
 
-    public ArrayList<com.jonfreer.wedding.servicemodel.Guest> getGuests(GuestSearchCriteria searchCriteria) {
+    public ArrayList<com.jonfreer.wedding.servicemodel.Guest> getGuests(GuestSearchQuery searchQuery) {
 
         IDatabaseUnitOfWork unitOfWork =
             this.databaseUnitOfWorkFactory.create();
@@ -156,20 +156,15 @@ public class GuestService implements IGuestService {
             this.guestRepositoryFactory.create(unitOfWork);
 
         try {
-            com.jonfreer.wedding.domain.GuestSearchCriteria searchCriteriaDomain = null;
-            if(searchCriteria != null){
-            	searchCriteriaDomain = 
-        			this.mapper.map(searchCriteria, com.jonfreer.wedding.domain.GuestSearchCriteria.class);
-            }
             ArrayList<com.jonfreer.wedding.domain.Guest> guests =
-                guestRepository.getGuests(searchCriteriaDomain);
+                guestRepository.getGuests(searchQuery);
 
             unitOfWork.Save();
 
             ArrayList<com.jonfreer.wedding.servicemodel.Guest> guestsServiceModel = 
             		new ArrayList<com.jonfreer.wedding.servicemodel.Guest>();
             for(com.jonfreer.wedding.domain.Guest guest : guests){
-            	guestsServiceModel.add(this.mapper.map(guest, com.jonfreer.wedding.servicemodel.Guest.class));
+            		guestsServiceModel.add(this.mapper.map(guest, com.jonfreer.wedding.servicemodel.Guest.class));
             }
             
             return guestsServiceModel;

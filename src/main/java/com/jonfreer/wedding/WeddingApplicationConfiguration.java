@@ -8,6 +8,7 @@ import com.jonfreer.wedding.api.filters.CacheControlFilter;
 import com.jonfreer.wedding.api.filters.ConditionalGetFilter;
 import com.jonfreer.wedding.api.filters.ConditionalPutFilter;
 import com.jonfreer.wedding.hk2.IGuestServiceBinder;
+import com.jonfreer.wedding.hk2.ConverterBinder;
 import com.jonfreer.wedding.hk2.EntityTagServiceBinder;
 import com.jonfreer.wedding.hk2.IDatabaseUnitOfWorkFactoryBinder;
 import com.jonfreer.wedding.hk2.LogServiceBinder;
@@ -45,5 +46,6 @@ public class WeddingApplicationConfiguration extends ResourceConfig {
         this.register(new MapperBinder());
         this.register(new EntityTagServiceBinder());
         this.register(new LogServiceBinder());
+        this.register(new ConverterBinder());
     }
 }

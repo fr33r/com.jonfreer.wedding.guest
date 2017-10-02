@@ -14,11 +14,11 @@ import javax.inject.Named;
 import org.jvnet.hk2.annotations.Service;
 
 import com.jonfreer.wedding.domain.Guest;
-import com.jonfreer.wedding.domain.GuestSearchCriteria;
 import com.jonfreer.wedding.domain.Reservation;
 import com.jonfreer.wedding.domain.interfaces.repositories.IGuestRepository;
 import com.jonfreer.wedding.domain.interfaces.unitofwork.IDatabaseUnitOfWork;
 import com.jonfreer.wedding.infrastructure.exceptions.ResourceNotFoundException;
+import com.jonfreer.wedding.infrastructure.queries.GuestSearchQuery;
 
 /**
  * A database repository that directly interacts with the database to manage
@@ -261,23 +261,27 @@ public class GuestRepository extends DatabaseRepository implements IGuestReposit
 	 *         provided; otherwise, a collection of all the guests in the
 	 *         repository.
 	 */
-	public ArrayList<Guest> getGuests(GuestSearchCriteria searchCriteria) {
+	public ArrayList<Guest> getGuests(GuestSearchQuery searchQuery) {
 
 		ArrayList<Guest> guests = new ArrayList<Guest>();
 		CallableStatement cStatement = null;
 		ResultSet result = null;
 
 		try {
-			cStatement = this.getUnitOfWork().createCallableStatement("{CALL GetGuests(?, ?, ?)}");
+			cStatement = this.getUnitOfWork().createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}");
 
-			if (searchCriteria != null) {
-				cStatement.setString(1, searchCriteria.getInviteCode());
-				cStatement.setString(2, searchCriteria.getGivenName());
-				cStatement.setString(3, searchCriteria.getSurname());
+			if (searchQuery != null) { 
+				cStatement.setString(1, searchQuery.getInviteCode());
+				cStatement.setString(2, searchQuery.getGivenName());
+				cStatement.setString(3, searchQuery.getSurname());
+				cStatement.setInt(4, searchQuery.getSkip() == null ? 0 : searchQuery.getSkip());
+				cStatement.setInt(5, searchQuery.getTake() == null ? Integer.MAX_VALUE : searchQuery.getTake());
 			} else {
 				cStatement.setString(1, null);
 				cStatement.setString(2, null);
 				cStatement.setString(3, null);
+				cStatement.setInt(4, 0);
+				cStatement.setInt(5, Integer.MAX_VALUE);
 			}
 
 			result = cStatement.executeQuery();

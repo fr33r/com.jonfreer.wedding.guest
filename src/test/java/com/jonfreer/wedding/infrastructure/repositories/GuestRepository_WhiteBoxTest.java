@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import com.jonfreer.wedding.annotations.WhiteBox;
 import com.jonfreer.wedding.infrastructure.exceptions.ResourceNotFoundException;
-import com.jonfreer.wedding.domain.GuestSearchCriteria;
+import com.jonfreer.wedding.infrastructure.queries.GuestSearchQuery;
 import com.jonfreer.wedding.domain.interfaces.repositories.IGuestRepository;
 import com.jonfreer.wedding.domain.interfaces.unitofwork.IDatabaseUnitOfWork;
 import com.mysql.jdbc.CallableStatement;
@@ -221,8 +221,11 @@ public class GuestRepository_WhiteBoxTest {
 		final String firstName = "Jon";
 		final String lastName = "Freer";
 		final String inviteCode = "PA000";
-		final GuestSearchCriteria searchCriteria = new GuestSearchCriteria(firstName, lastName, inviteCode);
-
+		final Integer skip = null;
+		final Integer take = null;
+		final GuestSearchQuery searchQuery = 
+			new GuestSearchQuery(firstName, lastName, inviteCode, skip, take);
+		
 		// create mocks.
 		CallableStatement callableStatementMock = mock(CallableStatement.class);
 		ResultSet resultSetMock = mock(ResultSet.class);
@@ -235,16 +238,18 @@ public class GuestRepository_WhiteBoxTest {
 
 		// action.
 		IGuestRepository guestRepository = new GuestRepository(this.databaseUnitOfWorkMock);
-		guestRepository.getGuests(searchCriteria);
+		guestRepository.getGuests(searchQuery);
 
 		// verify.
 		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?)}");
 		verify(this.databaseUnitOfWorkMock, times(1)).destroyStatement(callableStatementMock);
 		verifyNoMoreInteractions(this.databaseUnitOfWorkMock);
 
-		verify(callableStatementMock, times(1)).setString(1, searchCriteria.getInviteCode());
-		verify(callableStatementMock, times(1)).setString(2, searchCriteria.getGivenName());
-		verify(callableStatementMock, times(1)).setString(3, searchCriteria.getSurname());
+		verify(callableStatementMock, times(1)).setString(1, searchQuery.getInviteCode());
+		verify(callableStatementMock, times(1)).setString(2, searchQuery.getGivenName());
+		verify(callableStatementMock, times(1)).setString(3, searchQuery.getSurname());
+		verify(callableStatementMock, times(1)).setInt(4, searchQuery.getSkip() == null ? 0 : searchQuery.getSkip());
+		verify(callableStatementMock, times(1)).setInt(5, searchQuery.getTake() == null ? Integer.MAX_VALUE : searchQuery.getTake());
 		verify(callableStatementMock, times(1)).executeQuery();
 		// these aren't working anymore due to polymorphic call on
 		// destroyStatement.
@@ -282,7 +287,10 @@ public class GuestRepository_WhiteBoxTest {
 		final String firstName = "Jon";
 		final String lastName = "Freer";
 		final String inviteCode = "PA000";
-		final GuestSearchCriteria searchCriteria = new GuestSearchCriteria(firstName, lastName, inviteCode);
+		final Integer skip = null;
+		final Integer take = null;
+		final GuestSearchQuery searchQuery = 
+			new GuestSearchQuery(firstName, lastName, inviteCode, skip, take);
 
 		// create mocks.
 		CallableStatement callableStatementMock = mock(CallableStatement.class);
@@ -296,16 +304,18 @@ public class GuestRepository_WhiteBoxTest {
 
 		// action.
 		IGuestRepository guestRepository = new GuestRepository(this.databaseUnitOfWorkMock);
-		guestRepository.getGuests(searchCriteria);
+		guestRepository.getGuests(searchQuery);
 
 		// verify.
 		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?)}");
 		verify(this.databaseUnitOfWorkMock, times(1)).destroyStatement(callableStatementMock);
 		verifyNoMoreInteractions(this.databaseUnitOfWorkMock);
 
-		verify(callableStatementMock, times(1)).setString(1, searchCriteria.getInviteCode());
-		verify(callableStatementMock, times(1)).setString(2, searchCriteria.getGivenName());
-		verify(callableStatementMock, times(1)).setString(3, searchCriteria.getSurname());
+		verify(callableStatementMock, times(1)).setString(1, searchQuery.getInviteCode());
+		verify(callableStatementMock, times(1)).setString(2, searchQuery.getGivenName());
+		verify(callableStatementMock, times(1)).setString(3, searchQuery.getSurname());
+		verify(callableStatementMock, times(1)).setInt(4, searchQuery.getSkip() == null ? 0 : searchQuery.getSkip());
+		verify(callableStatementMock, times(1)).setInt(5, searchQuery.getTake() == null ? Integer.MAX_VALUE : searchQuery.getTake());
 		verify(callableStatementMock, times(1)).executeQuery();
 		// these aren't working anymore due to polymorphic call on
 		// destroyStatement.

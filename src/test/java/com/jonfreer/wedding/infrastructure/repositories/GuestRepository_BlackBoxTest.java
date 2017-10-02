@@ -16,11 +16,11 @@ import org.junit.Test;
 
 import com.jonfreer.wedding.annotations.BlackBox;
 import com.jonfreer.wedding.domain.Guest;
-import com.jonfreer.wedding.domain.GuestSearchCriteria;
 import com.jonfreer.wedding.domain.Reservation;
 import com.jonfreer.wedding.domain.interfaces.repositories.IGuestRepository;
 import com.jonfreer.wedding.domain.interfaces.unitofwork.IDatabaseUnitOfWork;
 import com.jonfreer.wedding.infrastructure.exceptions.ResourceNotFoundException;
+import com.jonfreer.wedding.infrastructure.queries.GuestSearchQuery;
 import com.mysql.jdbc.CallableStatement;
 
 /**
@@ -198,6 +198,8 @@ public class GuestRepository_BlackBoxTest {
 		final String description = "Groom.";
 		final String dietaryRestrictions = "None.";
 		final String inviteCode = "PA000";
+		final Integer skip = null;
+		final Integer take = null;
 		final int reservationId = 1;
 		final boolean isAttending = true;
 		final Reservation expectedReservation = new Reservation();
@@ -206,8 +208,8 @@ public class GuestRepository_BlackBoxTest {
 				id, firstName, lastName, description, inviteCode, 
 				dietaryRestrictions, expectedReservation
 			);
-		final GuestSearchCriteria searchCriteria = 
-			new GuestSearchCriteria(firstName, lastName, inviteCode);
+		final GuestSearchQuery searchQuery = 
+			new GuestSearchQuery(firstName, lastName, inviteCode, skip, take);
 			
 		//create mocks.
 		CallableStatement callableStatementMock = mock(CallableStatement.class);
@@ -236,7 +238,7 @@ public class GuestRepository_BlackBoxTest {
 		IGuestRepository guestRepository = 
 			new GuestRepository(this.databaseUnitOfWorkMock);
 
-		ArrayList<Guest> actualGuests = guestRepository.getGuests(searchCriteria);
+		ArrayList<Guest> actualGuests = guestRepository.getGuests(searchQuery);
 		
 		//assert.
 		assertEquals(1, actualGuests.size());
@@ -256,9 +258,11 @@ public class GuestRepository_BlackBoxTest {
 		final String firstName = "Jon";
 		final String lastName = "Freer";
 		final String inviteCode = "PA000";
-		final GuestSearchCriteria searchCriteria = 
-			new GuestSearchCriteria(firstName, lastName, inviteCode);
-			
+		final Integer skip = null;
+		final Integer take = null;
+		final GuestSearchQuery searchQuery = 
+			new GuestSearchQuery(firstName, lastName, inviteCode, skip, take);
+		
 		//create mocks.
 		CallableStatement callableStatementMock = mock(CallableStatement.class);
 		ResultSet resultSetMock = mock(ResultSet.class);
@@ -278,7 +282,7 @@ public class GuestRepository_BlackBoxTest {
 		IGuestRepository guestRepository = 
 			new GuestRepository(this.databaseUnitOfWorkMock);
 
-		ArrayList<Guest> actualGuests = guestRepository.getGuests(searchCriteria);
+		ArrayList<Guest> actualGuests = guestRepository.getGuests(searchQuery);
 		
 		//assert.
 		assertEquals(0, actualGuests.size());
