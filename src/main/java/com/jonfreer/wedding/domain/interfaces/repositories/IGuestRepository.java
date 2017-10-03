@@ -2,7 +2,7 @@ package com.jonfreer.wedding.domain.interfaces.repositories;
 
 import com.jonfreer.wedding.domain.Guest;
 import com.jonfreer.wedding.infrastructure.exceptions.ResourceNotFoundException;
-import com.jonfreer.wedding.domain.GuestSearchCriteria;
+import com.jonfreer.wedding.infrastructure.queries.GuestSearchQuery;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public interface IGuestRepository extends IRepository<Guest> {
      *
      * @return A collection of Guest instances in the repository.
      */
-    ArrayList<Guest> getGuests(GuestSearchCriteria searchCriteria);
+    ArrayList<Guest> getGuests(GuestSearchQuery searchCriteria);
 
     /**
      * Retrieves a specific guest from the repository.

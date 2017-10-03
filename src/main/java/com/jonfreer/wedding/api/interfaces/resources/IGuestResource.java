@@ -5,6 +5,7 @@ import com.jonfreer.wedding.servicemodel.Guest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -23,22 +24,32 @@ public interface IGuestResource {
     /**
      * Retrieves the collection of guest resources. Optional filter
      * criteria can be provided via query string parameters.
+     * @param request Information about the request.
+     * @param uriInfo Information about the request URI.
      * @param givenName When provided, filters the collection guest resources
      *                  that have a given name that matches.
      * @param surname When provided, filters the collection guest resources
      *                that have a surname (last name) that matches.
      * @param inviteCode When provided, filters the collection guest resources
      *                   that have an invite code that matches.
-     * @return A response that contains a collection of guests.
+     * @param skip When provided, the collection guest resources
+     *             matching the criteria is offset by the value provided.
+     * @param take When provided, the collection guest resources
+ *                 matching the criteria is limited by the value provided.
+     * @return The response containing the matching guest resources.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, "application/vnd.siren+json"})
     Response getGuests(
     		@Context Request request,
     		@Context UriInfo uriInfo,
-            @QueryParam("givenName") String givenName,
-            @QueryParam("surname") String surname,
-            @QueryParam("inviteCode") String inviteCode);
+    		@Context HttpHeaders headers,
+        @QueryParam("givenName") String givenName,
+        @QueryParam("surname") String surname,
+        @QueryParam("inviteCode") String inviteCode,
+        @QueryParam("skip") Integer skip,
+        @QueryParam("take") Integer take
+    );
 
     /**
      * Creates a new guest resource and appends it to the /guests/ resource collection.
@@ -65,10 +76,11 @@ public interface IGuestResource {
      */
     @Path("{id : \\d+}")
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, "application/vnd.siren+json"})
     Response getGuest(
     		@Context Request request,
     		@Context UriInfo uriInfo, 
+    		@Context HttpHeaders headers,
     		@PathParam("id") int id) throws ResourceNotFoundException;
 
     /**
