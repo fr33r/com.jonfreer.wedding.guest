@@ -166,7 +166,7 @@ public class GuestRepository_WhiteBoxTest {
 
 		// stub mocks.
 		when(resultSetMock.next()).thenReturn(true).thenReturn(false);
-		when(this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}"))
+		when(this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}"))
 			.thenReturn(callableStatementMock);
 
 		when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
@@ -176,13 +176,15 @@ public class GuestRepository_WhiteBoxTest {
 		guestRepository.getGuests(null);
 
 		// verify.
-		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?)}");
+		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}");
 		verify(this.databaseUnitOfWorkMock, times(1)).destroyStatement(callableStatementMock);
 		verifyNoMoreInteractions(this.databaseUnitOfWorkMock);
 
 		verify(callableStatementMock, times(1)).setString(1, null);
 		verify(callableStatementMock, times(1)).setString(2, null);
 		verify(callableStatementMock, times(1)).setString(3, null);
+		verify(callableStatementMock, times(1)).setInt(4, 0);
+		verify(callableStatementMock, times(1)).setInt(5, Integer.MAX_VALUE);
 		verify(callableStatementMock, times(1)).executeQuery();
 		// these aren't working anymore due to polymorphic call on
 		// destroyStatement.
@@ -231,7 +233,7 @@ public class GuestRepository_WhiteBoxTest {
 		ResultSet resultSetMock = mock(ResultSet.class);
 
 		when(resultSetMock.next()).thenReturn(true).thenReturn(false);
-		when(this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}"))
+		when(this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}"))
 			.thenReturn(callableStatementMock);
 
 		when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
@@ -241,7 +243,7 @@ public class GuestRepository_WhiteBoxTest {
 		guestRepository.getGuests(searchQuery);
 
 		// verify.
-		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?)}");
+		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}");
 		verify(this.databaseUnitOfWorkMock, times(1)).destroyStatement(callableStatementMock);
 		verifyNoMoreInteractions(this.databaseUnitOfWorkMock);
 
@@ -297,7 +299,7 @@ public class GuestRepository_WhiteBoxTest {
 		ResultSet resultSetMock = mock(ResultSet.class);
 
 		when(resultSetMock.next()).thenReturn(false);
-		when(this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}"))
+		when(this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}"))
 			.thenReturn(callableStatementMock);
 
 		when(callableStatementMock.executeQuery()).thenReturn(resultSetMock);
@@ -307,7 +309,7 @@ public class GuestRepository_WhiteBoxTest {
 		guestRepository.getGuests(searchQuery);
 
 		// verify.
-		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?)}");
+		verify(this.databaseUnitOfWorkMock, times(1)).createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}");
 		verify(this.databaseUnitOfWorkMock, times(1)).destroyStatement(callableStatementMock);
 		verifyNoMoreInteractions(this.databaseUnitOfWorkMock);
 

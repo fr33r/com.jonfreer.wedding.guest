@@ -164,7 +164,7 @@ public class GuestRepository_BlackBoxTest {
 		when(resultSetMock.getBoolean("IS_ATTENDING")).thenReturn(isAttending);
 
 		when(
-			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}")
+			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}")
 		).thenReturn(callableStatementMock);
 
 		when(
@@ -227,7 +227,7 @@ public class GuestRepository_BlackBoxTest {
 		when(resultSetMock.getBoolean("IS_ATTENDING")).thenReturn(isAttending);
 
 		when(
-			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}")
+			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}")
 		).thenReturn(callableStatementMock);
 
 		when(
@@ -271,7 +271,7 @@ public class GuestRepository_BlackBoxTest {
 		when(resultSetMock.next()).thenReturn(false);
 
 		when(
-			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?)}")
+			this.databaseUnitOfWorkMock.createCallableStatement("{CALL GetGuests(?, ?, ?, ?, ?)}")
 		).thenReturn(callableStatementMock);
 
 		when(
