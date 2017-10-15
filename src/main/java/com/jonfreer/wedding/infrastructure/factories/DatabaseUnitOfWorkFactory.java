@@ -42,9 +42,49 @@ public class DatabaseUnitOfWorkFactory implements IDatabaseUnitOfWorkFactory {
             databaseProperties.load(is);
             is.close();
 
-            this.connectionString = databaseProperties.getProperty("connectionString");
-            this.username = databaseProperties.getProperty("username");
-            this.password = databaseProperties.getProperty("password");
+		//default to the values in the property files for backward compatability.
+		//override values with environment values.
+		String host = databaseProperties.getProperty("host");
+		String port = databaseProperties.getProperty("port");
+		String databaseName = databaseProperties.getProperty("databaseName");
+		String username = databaseProperties.getProperty("username");
+		String password = databaseProperties.getProperty("password");
+		String jdbcConnectionString = "jdbc:mysql://%s:%s/%s?useLegacyDatetimeCode=false";
+
+		String hostEnv = System.getenv("REZZY_DB_PORT_3306_TCP_ADDR");
+		if(hostEnv != null){
+			System.out.println("Successfully read database host environment variable.");
+			host = hostEnv;
+		}
+
+		String portEnv = System.getenv("REZZY_DB_PORT_3306_TCP_PORT");
+		if(portEnv != null){
+			System.out.println("Successfully read database port environment variable.");
+			port = portEnv;
+		}
+
+		String databaseNameEnv = System.getenv("REZZY_DB_ENV_MYSQL_DATABASE");
+		if(databaseNameEnv != null){
+			System.out.println("Successfully read database name environment variable.");
+			databaseName = databaseNameEnv;
+		}
+
+		String usernameEnv = System.getenv("REZZY_DB_ENV_MYSQL_USER");
+		if(usernameEnv != null){
+			System.out.println("Successfully read database user environment variable.");
+			username = usernameEnv;
+		}
+
+		String passwordEnv = System.getenv("REZZY_DB_ENV_MYSQL_PASSWORD");
+		if(passwordEnv != null){
+			System.out.println("Successfully read database password environment variable.");
+			password = passwordEnv;
+		}
+
+		this.connectionString = String.format(jdbcConnectionString, host, port, databaseName);
+		System.out.println("Connection string: " + this.connectionString);
+		this.username = username;
+		this.password = password;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
