@@ -1,0 +1,82 @@
+/*
+	Creates the REZZY database.
+*/
+CREATE DATABASE `REZZY`;
+
+USE `REZZY`;
+
+/*
+	Stores representations of guest reservations.
+*/
+CREATE TABLE `RESERVATION` (
+
+	`UUID` 			varchar(128)	NOT NULL,
+	`SUBMITTED_AT_UTC` 	timestamp 	NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`IS_ATTENDING` 		bit(1) 		NOT NULL DEFAULT b'0',
+
+	PRIMARY KEY (`UUID`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*
+	Stores representations of the wedding guests.
+*/
+CREATE TABLE `GUEST` (
+
+	`UUID`				varchar(128)	NOT NULL,
+	`FIRST_NAME`			varchar(100)	NOT NULL,
+	`LAST_NAME`			varchar(100)	NOT NULL,
+	`DESCRIPTION`			varchar(100)	NOT NULL,
+	`DIETARY_RESTRICTIONS`		varchar(500)	DEFAULT NULL,
+	`INVITE_CODE`			varchar(10)	NOT NULL,
+	`RESERVATION_UUID`		varchar(128)	DEFAULT NULL,
+
+	PRIMARY KEY (`UUID`),
+	KEY `GUEST_RESERVATION_UUID_FK` (`RESERVATION_UUID`),
+	CONSTRAINT `GUEST_RESERVATION_UUID_FK` FOREIGN KEY (`RESERVATION_UUID`) REFERENCES `RESERVATION` (`UUID`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*
+	Creates indexes for the GUEST table.
+
+	- first name.
+	- last name.
+	- invite code.
+*/
+CREATE INDEX `GUEST_FIRST_NAME_IDX` ON `GUEST` (`FIRST_NAME`);
+CREATE INDEX `GUEST_LAST_NAME_IDX` ON `GUEST` (`LAST_NAME`);
+CREATE INDEX `GUEST_INVITE_CODE_IDX` ON `GUEST` (`INVITE_CODE`);
+
+/*
+	Stores metadata for resource representations.
+*/
+CREATE TABLE `RESOURCE_METADATA` (
+
+	`URI` 			varchar(3000)	CHARACTER SET ascii NOT NULL,
+	`LAST_MODIFIED_UTC`	datetime 	NOT NULL,
+	`ENTITY_TAG`		varchar(1000)	NOT NULL,
+
+	PRIMARY KEY (`URI`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*
+	Stores representations of logs.
+*/
+CREATE TABLE `LOG` (
+
+	`UUID`			varchar(128) 	NOT NULL,
+	`LEVEL`			varchar(100) 	NOT NULL,
+	`MESSAGE`		varchar(5000) 	NOT NULL,
+	`STACKTRACE`		varchar(5000) 	DEFAULT NULL,
+	`OCCURRED_AT_UTC`	datetime 	NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+	PRIMARY KEY (`UUID`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+/*
+	Creates indexes for the LOG table.
+*/
+CREATE INDEX `LOG_OCCURRED_AT_UTC_IDX` ON `LOG` (`OCCURRED_AT_UTC`);

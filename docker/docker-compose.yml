@@ -1,0 +1,35 @@
+rezzy_1:
+  build: .
+  ports:
+    - "8080:8080"
+  links:
+    - rezzy-db
+
+rezzy_2:
+  build: .
+  ports:
+    - "8181:8080"
+  links:
+    - rezzy-db
+
+rezzy-db:
+  image: mysql:latest
+  environment:
+    MYSQL_ROOT_PASSWORD: __Goalie31__
+    MYSQL_USER: web_app
+    MYSQL_PASSWORD: __Goalie31__
+    MYSQL_DATABASE: wedding_jonfreer_com
+  volumes:
+    - ~/mysql/:/etc/mysql/conf.d
+    - ~/mysql_startup_scripts/:/docker-entrypoint-initdb.d
+
+rezzy-proxy:
+  image: nginx:latest
+  ports:
+    - "9090:80"
+  volumes:
+    - ~/nginx/default.conf:/etc/nginx/conf.d/default.conf
+  links:
+    - rezzy_1
+    - rezzy_2
+
