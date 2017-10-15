@@ -31,7 +31,7 @@ public class CacheControlFilter implements ContainerResponseFilter {
 			if(uriInfo.getQueryParameters().isEmpty()){
 				
 				CacheControl cacheControl = new CacheControl();
-				cacheControl.setPrivate(true);
+				//cacheControl.setPrivate(true);
 				cacheControl.setMaxAge(300);
 				
 				responseContext.getHeaders().add("Cache-Control", cacheControl);
