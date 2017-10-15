@@ -7,6 +7,7 @@ import com.jonfreer.wedding.api.exceptionmappers.NotFoundExceptionMapper;
 import com.jonfreer.wedding.api.filters.CacheControlFilter;
 import com.jonfreer.wedding.api.filters.ConditionalGetFilter;
 import com.jonfreer.wedding.api.filters.ConditionalPutFilter;
+import com.jonfreer.wedding.api.filters.VaryFilter;
 import com.jonfreer.wedding.hk2.IGuestServiceBinder;
 import com.jonfreer.wedding.hk2.ConverterBinder;
 import com.jonfreer.wedding.hk2.EntityTagServiceBinder;
@@ -37,6 +38,7 @@ public class WeddingApplicationConfiguration extends ResourceConfig {
         this.register(CacheControlFilter.class);
         this.register(ConditionalGetFilter.class);
         this.register(ConditionalPutFilter.class);
+        this.register(VaryFilter.class);
 
         //HK2 Binders.
         this.register(new IGuestServiceBinder());
