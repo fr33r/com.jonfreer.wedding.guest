@@ -49,33 +49,33 @@ public class DatabaseUnitOfWorkFactory implements IDatabaseUnitOfWorkFactory {
 		String databaseName = databaseProperties.getProperty("databaseName");
 		String username = databaseProperties.getProperty("username");
 		String password = databaseProperties.getProperty("password");
-		String jdbcConnectionString = "jdbc:mysql://%s:%s/%s?useLegacyDatetimeCode=false";
+		String jdbcConnectionString = "jdbc:mysql://%s:%s/%s?useLegacyDatetimeCode=false&useSSL=false";
 
-		String hostEnv = System.getenv("REZZY_DB_PORT_3306_TCP_ADDR");
+		String hostEnv = System.getenv("MYSQL_HOST");
 		if(hostEnv != null){
 			System.out.println("Successfully read database host environment variable.");
 			host = hostEnv;
 		}
 
-		String portEnv = System.getenv("REZZY_DB_PORT_3306_TCP_PORT");
+		String portEnv = System.getenv("MYSQL_PORT");
 		if(portEnv != null){
 			System.out.println("Successfully read database port environment variable.");
 			port = portEnv;
 		}
 
-		String databaseNameEnv = System.getenv("REZZY_DB_ENV_MYSQL_DATABASE");
+		String databaseNameEnv = System.getenv("MYSQL_DATABASE");
 		if(databaseNameEnv != null){
 			System.out.println("Successfully read database name environment variable.");
 			databaseName = databaseNameEnv;
 		}
 
-		String usernameEnv = System.getenv("REZZY_DB_ENV_MYSQL_USER");
+		String usernameEnv = System.getenv("MYSQL_USER");
 		if(usernameEnv != null){
 			System.out.println("Successfully read database user environment variable.");
 			username = usernameEnv;
 		}
 
-		String passwordEnv = System.getenv("REZZY_DB_ENV_MYSQL_PASSWORD");
+		String passwordEnv = System.getenv("MYSQL_PASSWORD");
 		if(passwordEnv != null){
 			System.out.println("Successfully read database password environment variable.");
 			password = passwordEnv;
