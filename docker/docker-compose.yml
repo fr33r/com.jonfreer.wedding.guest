@@ -13,6 +13,8 @@ services:
       MYSQL_PASSWORD: __Goalie31__
       MYSQL_DATABASE: wedding_jonfreer_com
       MYSQL_PORT: 3306
+    volumes:
+      - ./tomcat/:/usr/local/tomcat/conf/
 
   rezzy_2:
     build:
@@ -27,6 +29,8 @@ services:
       MYSQL_PASSWORD: __Goalie31__
       MYSQL_DATABASE: wedding_jonfreer_com
       MYSQL_PORT: 3306
+    volumes:
+      - ./tomcat/:/usr/local/tomcat/conf/
 
   rezzy-db:
     image: mysql:latest
